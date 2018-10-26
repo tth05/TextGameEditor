@@ -34,6 +34,7 @@ dependencies {
 
     compile "no.tornado:tornadofx:$tornadofx_version"
     compile "org.controlsfx:controlsfx:8.40.14"
+    compile "org.yaml:snakeyaml:1.21"
 
     testCompile "org.junit.jupiter:junit-jupiter-api:$junit_version"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:$junit_version"
