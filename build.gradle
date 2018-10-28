@@ -27,6 +27,9 @@ repositories {
     maven {
         url "https://oss.sonatype.org/content/repositories/snapshots/"
     }
+    maven {
+        url "https://dl.bintray.com/dua3/public/"
+    }
 }
 
 dependencies {
@@ -35,6 +38,8 @@ dependencies {
     compile "no.tornado:tornadofx:$tornadofx_version"
     compile "org.controlsfx:controlsfx:8.40.14"
     compile "org.yaml:snakeyaml:1.21"
+    compile 'de.jensd:fontawesomefx-materialicons:2.2.0-9.1.2-jdk8'
+    compile 'de.jensd:fontawesomefx-commons:9.1.2-jdk8'
 
     testCompile "org.junit.jupiter:junit-jupiter-api:$junit_version"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:$junit_version"

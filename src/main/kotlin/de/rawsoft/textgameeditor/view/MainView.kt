@@ -1,20 +1,25 @@
 package de.rawsoft.textgameeditor.view
 
-import de.rawsoft.textgameeditor.controller.TestController
-import de.rawsoft.textgameeditor.game.GameVariable
-import javafx.scene.control.Label
+import de.jensd.fx.glyphs.materialicons.MaterialIcon
+import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import de.rawsoft.textgameeditor.controller.VariableController
+import de.rawsoft.textgameeditor.game.Variable
+import de.rawsoft.textgameeditor.game.VariableModel
 import javafx.scene.control.TabPane
+import javafx.scene.control.TableView
 import javafx.scene.control.TreeItem
 import tornadofx.*
 
 class MainView : View("Hello TornadoFX") {
     override val root = borderpane()
-    val label = Label(title)
-    val testController: TestController by inject()
+    val variableModel: VariableModel by inject()
+    val variableController: VariableController by inject()
 
     init {
         primaryStage.width = 1000.0
         primaryStage.height = 600.0
+        primaryStage.isResizable = false
+        primaryStage.title = "TextGameEditor"
         with(root) {
             top = menubar {
                 useMaxWidth = true
@@ -36,17 +41,44 @@ class MainView : View("Hello TornadoFX") {
                 }
 
                 tab("Variables") {
-                    tableview(testController.testVariables) {
-                        column("Name", GameVariable<out Any>::nameProperty).minWidth(150)
-                        column("Value", GameVariable<out Any>::value).remainingWidth()
+                    hbox {
+                        var tableview: TableView<Variable>? = null
+                        vbox {
+                            style {
+                                spacing = 5.0.px
+                                padding = box(5.0.px)
+                            }
 
-                        contextmenu {
-                            item("Delete").action {
-                                selectedItem?.apply { testController.testVariables.remove(selectedItem) }
+                            button {
+                                graphic = MaterialIconView(MaterialIcon.ADD).apply {
+                                    size = "2em"
+                                }
+                            }
+                            button {
+                                graphic = MaterialIconView(MaterialIcon.DELETE).apply {
+                                    size = "2em"
+                                }
+                                setOnMouseClicked {
+                                    tableview!!.selectedItem?.apply { variableController.variables.remove(tableview!!.selectedItem) }
+                                }
                             }
                         }
+                        tableview = tableview(variableController.variables) {
+                            column("Name", Variable::nameProperty).minWidth(150)
+                            column("Value", Variable::valueProperty).remainingWidth()
 
-                        columnResizePolicy = SmartResize.POLICY
+                            prefWidth = 1000.0
+                            bindSelected(variableModel)
+
+                            contextmenu {
+                                item("Delete").action {
+                                    selectedItem?.apply { variableController.variables.remove(selectedItem) }
+                                }
+                            }
+
+                            columnResizePolicy = SmartResize.POLICY
+                        }
+                        this += VariableEditor()
                     }
                 }
             }
