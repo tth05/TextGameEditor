@@ -14,15 +14,24 @@ class VariableEditor : View() {
 
         fieldset {
             field("Name") {
-                textfield(model.name)
+                textfield(model.name).validator {
+                    if (!it.isNullOrBlank()) null else error("Ungültiger Name")
+                }
             }
 
             field("Value") {
-                textfield(model.value)
+                textfield(model.value).validator {
+                    if (model.item != null && model.item.isValidValue(it)) null else error("Ungültiger Wert")
+                }
             }
         }
-        button("Save").setOnAction {
-            model.commit()
+        button("Save") {
+            enableWhen(model.valid)
+            setOnAction {
+                model.commit()
+            }
         }
+
+        model.validate(decorateErrors = true)
     }
 }

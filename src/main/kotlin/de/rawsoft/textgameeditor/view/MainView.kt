@@ -10,7 +10,7 @@ import javafx.scene.control.TableView
 import javafx.scene.control.TreeItem
 import tornadofx.*
 
-class MainView : View("Hello TornadoFX") {
+class MainView : View("TextGameEditor") {
     override val root = borderpane()
     val variableModel: VariableModel by inject()
     val variableController: VariableController by inject()
@@ -19,7 +19,6 @@ class MainView : View("Hello TornadoFX") {
         primaryStage.width = 1000.0
         primaryStage.height = 600.0
         primaryStage.isResizable = false
-        primaryStage.title = "TextGameEditor"
         with(root) {
             top = menubar {
                 useMaxWidth = true
@@ -52,6 +51,10 @@ class MainView : View("Hello TornadoFX") {
                             button {
                                 graphic = MaterialIconView(MaterialIcon.ADD).apply {
                                     size = "2em"
+                                }
+
+                                setOnMouseClicked {
+                                    VariableCreator(tableview?.items).openModal()
                                 }
                             }
                             button {
