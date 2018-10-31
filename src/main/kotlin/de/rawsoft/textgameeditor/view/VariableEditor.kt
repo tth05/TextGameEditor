@@ -1,5 +1,6 @@
 package de.rawsoft.textgameeditor.view
 
+import de.rawsoft.textgameeditor.controller.VariableController
 import de.rawsoft.textgameeditor.game.VariableModel
 import javafx.scene.layout.Priority
 import tornadofx.*
@@ -7,6 +8,7 @@ import tornadofx.*
 class VariableEditor : View() {
 
     val model: VariableModel by inject()
+    val variableController: VariableController by inject()
 
     override val root = form {
         minWidth = 300.0
@@ -15,7 +17,10 @@ class VariableEditor : View() {
         fieldset {
             field("Name") {
                 textfield(model.name).validator {
-                    if (!it.isNullOrBlank()) null else error("Ungültiger Name")
+                    if (!it.isNullOrBlank() && !variableController.variables
+                                    .filter { variable -> variable.name != model.item.name }
+                                    .any { variable -> variable.name.equals(it, ignoreCase = true) })
+                        null else error("Ungültiger Name")
                 }
             }
 

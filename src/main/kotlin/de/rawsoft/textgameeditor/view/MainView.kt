@@ -86,6 +86,7 @@ class MainView : View("TextGameEditor") {
                 }
             }
         }
+        println(variableController.setPlaceholders("Der Spieler {Test} ist cooler als der Spieler {Test123}"))
     }
 
     private fun testFillTree(root: TreeItem<String>) {

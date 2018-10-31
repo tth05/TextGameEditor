@@ -16,7 +16,7 @@ class VariableController : Controller() {
     }
 
     companion object {
-        val variablePattern = Regex("(\\{[a-zA-Z0-9]+})")
+        val variablePattern = Regex("(\\{\\w+})")
     }
 
     fun getVariableByName(name: String) : Pair<String, Variable?> {
@@ -27,8 +27,8 @@ class VariableController : Controller() {
     fun setPlaceholders(value: String) : String {
         var returns = value
         variablePattern.findAll(returns).forEach { result ->
-            returns = returns.replace(result.value, getVariableByName(result.value.replace(Regex("[{}]"), "")).second!!.value.toString())
+            returns = returns.replace(result.value, getVariableByName(result.value.replace(Regex("[{}]"), "")).second!!.value)
         }
-        return value
+        return returns
     }
 }

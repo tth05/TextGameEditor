@@ -1,5 +1,6 @@
 package de.rawsoft.textgameeditor.view
 
+import de.rawsoft.textgameeditor.controller.VariableController
 import de.rawsoft.textgameeditor.game.IntVariable
 import de.rawsoft.textgameeditor.game.Variable
 import de.rawsoft.textgameeditor.game.VariableModel
@@ -9,6 +10,7 @@ import tornadofx.*
 class VariableCreator(val items: ObservableList<Variable>?) : View("Variable erstellen") {
 
     val model = VariableModel(Variable("", ""))
+    val variableController: VariableController by inject()
 
     override val root = form {
         minWidth = 300.0
@@ -25,7 +27,10 @@ class VariableCreator(val items: ObservableList<Variable>?) : View("Variable ers
 
             field("Name") {
                 textfield(model.name).validator {
-                    if (!it.isNullOrBlank()) null else error("Ungültiger Name")
+                    if (!it.isNullOrBlank() && !variableController.variables
+                                    .filter { variable -> variable.name != model.item.name }
+                                    .any { variable -> variable.name.equals(it, ignoreCase = true) })
+                        null else error("Ungültiger Name")
                 }
             }
 
