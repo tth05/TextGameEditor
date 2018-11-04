@@ -1,12 +1,11 @@
 package de.rawsoft.textgameeditor.controller
 
 import de.rawsoft.textgameeditor.game.Variable
-import javafx.collections.FXCollections
 import tornadofx.*
 
 class VariableController : Controller() {
 
-    val variables = FXCollections.observableArrayList<Variable>()
+    val variables = observableList<Variable>()
 
     init {
         variables += Variable("Test", "125352gw4")

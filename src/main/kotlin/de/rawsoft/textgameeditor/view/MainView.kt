@@ -2,7 +2,9 @@ package de.rawsoft.textgameeditor.view
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import de.rawsoft.textgameeditor.controller.NodeController
 import de.rawsoft.textgameeditor.controller.VariableController
+import de.rawsoft.textgameeditor.game.GameNode
 import de.rawsoft.textgameeditor.game.Variable
 import de.rawsoft.textgameeditor.game.VariableModel
 import javafx.scene.control.TabPane
@@ -12,8 +14,11 @@ import tornadofx.*
 
 class MainView : View("TextGameEditor") {
     override val root = borderpane()
+
     val variableModel: VariableModel by inject()
+
     val variableController: VariableController by inject()
+    val nodeController: NodeController by inject()
 
     init {
         primaryStage.width = 1000.0
@@ -34,8 +39,12 @@ class MainView : View("TextGameEditor") {
                 tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
 
                 tab("Nodes") {
-                    treeview<String>(TreeItem("Start")) {
-                        testFillTree(root)
+                    treeview<GameNode>(TreeItem(nodeController.nodes.getOrDefault("start", GameNode("Start", "start", "A message", "A message")))) {
+                        nodeController.fillTreeView(this)
+
+                        cellFormat {
+                            this.text = this.treeItem.value.name
+                        }
                     }
                 }
 
@@ -47,20 +56,14 @@ class MainView : View("TextGameEditor") {
                                 spacing = 5.0.px
                                 padding = box(5.0.px)
                             }
-
                             button {
-                                graphic = MaterialIconView(MaterialIcon.ADD).apply {
-                                    size = "2em"
-                                }
-
+                                graphic = MaterialIconView(MaterialIcon.ADD).apply { size = "2em" }
                                 setOnMouseClicked {
                                     VariableCreator(tableview?.items).openModal()
                                 }
                             }
                             button {
-                                graphic = MaterialIconView(MaterialIcon.DELETE).apply {
-                                    size = "2em"
-                                }
+                                graphic = MaterialIconView(MaterialIcon.DELETE).apply { size = "2em" }
                                 setOnMouseClicked {
                                     tableview!!.selectedItem?.apply { variableController.variables.remove(tableview!!.selectedItem) }
                                 }
@@ -85,17 +88,6 @@ class MainView : View("TextGameEditor") {
                     }
                 }
             }
-        }
-        println(variableController.setPlaceholders("Der Spieler {Test} ist cooler als der Spieler {Test123}"))
-    }
-
-    private fun testFillTree(root: TreeItem<String>) {
-        for (i in 0 until 5) {
-            val item = TreeItem<String>("Test $i")
-            for (j in 0 until 2) {
-                item.children.add(TreeItem<String>("Test $j"))
-            }
-            root.children.add(item)
         }
     }
 }
