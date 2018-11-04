@@ -56,14 +56,12 @@ class MainView : View("TextGameEditor") {
                                 spacing = 5.0.px
                                 padding = box(5.0.px)
                             }
-                            button {
-                                graphic = MaterialIconView(MaterialIcon.ADD).apply { size = "2em" }
+                            button(graphic = MaterialIconView(MaterialIcon.ADD).apply { size = "2em" }) {
                                 setOnMouseClicked {
                                     VariableCreator(tableview?.items).openModal()
                                 }
                             }
-                            button {
-                                graphic = MaterialIconView(MaterialIcon.DELETE).apply { size = "2em" }
+                            button(graphic = MaterialIconView(MaterialIcon.DELETE).apply { size = "2em" }) {
                                 setOnMouseClicked {
                                     tableview!!.selectedItem?.apply { variableController.variables.remove(tableview!!.selectedItem) }
                                 }
@@ -85,6 +83,29 @@ class MainView : View("TextGameEditor") {
                             columnResizePolicy = SmartResize.POLICY
                         }
                         this += VariableEditor()
+                    }
+                }
+
+                tab("Play") {
+                    vbox {
+                        val area = textarea {
+                            isEditable = false
+                            prefHeight = 1000.0
+
+                            text = "wjfakjfakepgjapog"
+
+                            style {
+                                fontSize = 15.0.px
+                            }
+                        }
+
+                        textfield {
+                        }
+
+                        spacing = 5.0
+                        style {
+                            padding = box(5.0.px)
+                        }
                     }
                 }
             }

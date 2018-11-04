@@ -1,11 +1,28 @@
 package de.rawsoft.textgameeditor.game
 
 import de.rawsoft.textgameeditor.config.ConfigurationSection
+import javafx.beans.property.SimpleListProperty
+import javafx.beans.property.SimpleStringProperty
+import tornadofx.*
 
-class GameNode(val name: String, val path: String?, val title: String, val message: String) {
+class GameNode(name: String, path: String?, title: String, message: String) {
+    val messageProperty = SimpleStringProperty(message)
+    var message by messageProperty
+
+    val titleProperty = SimpleStringProperty(title)
+    var title by titleProperty
+
+    val pathProperty = SimpleStringProperty(path)
+    var path by pathProperty
+
+    val nameProperty = SimpleStringProperty(name)
+    var name by nameProperty
+
+    val actionsProperty = SimpleListProperty<GameAction>()
+    val actions by actionsProperty
 
     val children = mutableListOf<String>()
-    val actions = mutableListOf<GameAction>()
+
 
     companion object {
         fun fromConfigSection(section: ConfigurationSection): GameNode {
@@ -15,4 +32,11 @@ class GameNode(val name: String, val path: String?, val title: String, val messa
             return node
         }
     }
+}
+
+class GameNodeModel() : ItemViewModel<GameNode>() {
+    val name = bind { item?.nameProperty }
+    val title = bind { item?.nameProperty }
+    val message = bind { item?.nameProperty }
+    val actions = bind { item?.actionsProperty }
 }

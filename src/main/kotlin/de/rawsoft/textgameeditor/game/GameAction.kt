@@ -2,9 +2,10 @@ package de.rawsoft.textgameeditor.game
 
 import de.rawsoft.textgameeditor.config.ConfigurationSection
 import de.rawsoft.textgameeditor.controller.NodeController
+import javafx.scene.paint.Color
 import tornadofx.*
 
-abstract class GameAction : Fragment() {
+abstract class GameAction(var onSavePress: () -> Unit = {}, var onCancelPress: () -> Unit = {}) : Fragment() {
 
     val nodeController: NodeController by inject()
 
@@ -13,28 +14,45 @@ abstract class GameAction : Fragment() {
         fun fromConfigSection(section: ConfigurationSection): GameAction = GoToAction("")
     }
 
-    abstract fun isValid(): Boolean
-
     //TODO: Abstract method for executing the action
 }
 
-class GoToAction(var gotoPath: String? = null) : GameAction() {
+class GoToAction(var gotoPath: String = "start") : GameAction() {
     override val root = vbox {
-        label("GOTO Action")
-        val combobox = combobox<String> {
-            selectionModel.select("start")
-            selectionModel.selectedItemProperty().onChange {
-                if (it != null) gotoPath = it
+        form {
+            fieldset("GoTo Action") {
+                field("Jump to:") {
+                    combobox(values = nodeController.sortedNodeKeys) {
+                        selectionModel.select("start")
+                        selectionModel.selectedItemProperty().onChange {
+                            if (it != null) gotoPath = it
+                        }
+                    }
+                }
             }
-            items.addAll(nodeController.sortedNodeKeys)
+            hbox {
+                button("Save") {
+                    setOnMouseClicked {
+                        println("invoke save")
+                        onSavePress.invoke()
+                        println(onSavePress)
+                    }
+                }
+                button("Cancel") {
+                    setOnMouseClicked {
+                        onCancelPress.invoke()
+                    }
+                }
+            }
 
-            cellFormat {
-                this.text = it.substring(it.lastIndexOf('.'))
+            style {
+                borderColor += box(Color.GREY)
+                borderWidth += box(1.0.px)
             }
         }
     }
 
-    override fun isValid(): Boolean {
-        return gotoPath != null
+    override fun toString(): String {
+        return "GOTO $gotoPath"
     }
 }
