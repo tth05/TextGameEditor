@@ -2,6 +2,7 @@ package de.rawsoft.textgameeditor.view
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import de.rawsoft.textgameeditor.game.ChangeVariableAction
 import de.rawsoft.textgameeditor.game.GameAction
 import de.rawsoft.textgameeditor.game.GameNodeModel
 import de.rawsoft.textgameeditor.game.GoToAction
@@ -27,17 +28,27 @@ class NodeCreator(val nodeModel: GameNodeModel = GameNodeModel()) : View("My Vie
                             val action = GoToAction()
                             action.onSavePress = {
                                 nodeModel.actions.value.add(action)
-                                action.root.parent.add(actionFragment)
-                                action.removeFromParent()
-                                primaryStage.sizeToScene()
+                                handleSwitch(action)
                             }
                             action.onCancelPress = {
-                                action.root.parent.add(actionFragment)
-                                action.removeFromParent()
-                                primaryStage.sizeToScene()
+                                handleSwitch(action)
                             }
                             parent.add(action)
-                            primaryStage.sizeToScene()
+                        }
+                    }
+                    item("CHANGEVARIABLE") {
+                        setOnAction {
+                            val parent = listView!!.parent.parent
+                            listView!!.parent.removeFromParent()
+                            val action = ChangeVariableAction()
+                            action.onSavePress = {
+                                nodeModel.actions.value.add(action)
+                                handleSwitch(action)
+                            }
+                            action.onCancelPress = {
+                                handleSwitch(action)
+                            }
+                            parent.add(action)
                         }
                     }
                 }
@@ -59,15 +70,20 @@ class NodeCreator(val nodeModel: GameNodeModel = GameNodeModel()) : View("My Vie
             field("Name:") {
                 textfield(nodeModel.name)
             }
-            field("Message:") {
-                textarea(nodeModel.message)
-            }
             field("Title:") {
                 textfield(nodeModel.title)
+            }
+            field("Message:") {
+                textarea(nodeModel.message)
             }
         }
         fieldset("Actions") {
             this += actionFragment
         }
+    }
+
+    fun handleSwitch(action: GameAction) {
+        action.root.parent.add(actionFragment)
+        action.removeFromParent()
     }
 }
