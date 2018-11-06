@@ -9,9 +9,10 @@ import de.rawsoft.textgameeditor.game.GoToAction
 import javafx.scene.control.ListView
 import tornadofx.*
 
-class NodeCreator(val nodeModel: GameNodeModel = GameNodeModel()) : View("My View") {
+class NodeCreator(val path: String, val onSave: (nodeModel: GameNodeModel) -> Unit) : View("Node Creator") {
     var listView: ListView<GameAction>? = null
     val actionFragment = hbox()
+    val nodeModel: GameNodeModel = GameNodeModel()
 
     init {
         primaryStage.isResizable = false
@@ -79,6 +80,12 @@ class NodeCreator(val nodeModel: GameNodeModel = GameNodeModel()) : View("My Vie
         }
         fieldset("Actions") {
             this += actionFragment
+        }
+        button("Save") {
+            enableWhen(nodeModel.valid)
+            setOnAction {
+                onSave.invoke(nodeModel)
+            }
         }
     }
 

@@ -9,7 +9,6 @@ import de.rawsoft.textgameeditor.game.Variable
 import de.rawsoft.textgameeditor.game.VariableModel
 import javafx.scene.control.TabPane
 import javafx.scene.control.TableView
-import javafx.scene.control.TreeItem
 import tornadofx.*
 
 class MainView : View("TextGameEditor") {
@@ -39,8 +38,22 @@ class MainView : View("TextGameEditor") {
                 tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
 
                 tab("Nodes") {
-                    treeview<GameNode>(TreeItem(nodeController.nodes.getOrDefault("start", GameNode("Start", "start", "A message", "A message")))) {
-                        nodeController.fillTreeView(this)
+                    treeview<GameNode> {
+                        nodeController.refillTreeView(this)
+
+                        contextMenu = contextmenu {
+                            item("Delete") {
+                                setOnAction {
+                                    val selectedItemPath = this@treeview.selectionModel.selectedItem.value.path
+                                    nodeController.removeNodeIf {
+                                        it.path.startsWith(selectedItemPath)
+                                    }
+                                    val item = nodeController.getItemByPath(this@treeview, selectedItemPath.split("."))
+                                    val parent = item!!.parent
+                                    parent.children.remove(item)
+                                }
+                            }
+                        }
 
                         cellFormat {
                             this.text = this.treeItem.value.name

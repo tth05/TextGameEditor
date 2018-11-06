@@ -30,24 +30,44 @@ class NodeController : Controller() {
         nodes["start.option2"] = GameNode("go right", "start.option2", "2. Go right", "You go right, what's next?")
     }
 
-    fun fillTreeView(view: TreeView<GameNode>) {
+    fun refillTreeView(view: TreeView<GameNode>) {
+        view.root = TreeItem(nodes.getOrDefault("start", GameNode("Start", "start", "A message", "A message")))
         val map = nodesSortedByKeys.filter { it.key != "start" }
-        println(map)
-//        println(nodes)
 
         map.forEach {
-            val node = getNodeRecursive(view, view.root, it.key.split("."), 1)
+            val node = getParentItemByPath(view, it.key.split("."))
             node?.children?.add(TreeItem<GameNode>(it.value))
         }
     }
 
-    private fun getNodeRecursive(view: TreeView<GameNode>, currentNode: TreeItem<GameNode>, parts: List<String>, i: Int): TreeItem<GameNode>? {
+    /**
+     * Returns the second last node in the specified path
+     * Given start.1.2.3 this method returns the node at start.1.2
+     */
+    fun getParentItemByPath(view: TreeView<GameNode>, parts: List<String>, i: Int = 1, currentNode: TreeItem<GameNode> = view.root): TreeItem<GameNode>? {
         if (i >= parts.size - 1) return currentNode
         for (node in currentNode.children) {
             if (node.value.path!!.substring(node.value.path!!.lastIndexOf('.') + 1) == parts[i])
-                return getNodeRecursive(view, node, parts, i + 1)
+                return getParentItemByPath(view, parts, i + 1, node)
         }
         return null
+    }
+
+    fun getItemByPath(view: TreeView<GameNode>, parts: List<String>, i: Int = 1, currentNode: TreeItem<GameNode> = view.root): TreeItem<GameNode>? {
+        if (i >= parts.size) return currentNode
+        for (node in currentNode.children) {
+            if (node.value.path!!.substring(node.value.path!!.lastIndexOf('.') + 1) == parts[i])
+                return getItemByPath(view, parts, i + 1, node)
+        }
+        return null
+    }
+
+    fun removeNodeIf(validator: (GameNode) -> Boolean) {
+        val iterator = nodes.iterator()
+        while (iterator.hasNext()) {
+            val next = iterator.next()
+            if(validator.invoke(next.value)) iterator.remove()
+        }
     }
 
     fun String.frequencyOf(c: Char): Int {
