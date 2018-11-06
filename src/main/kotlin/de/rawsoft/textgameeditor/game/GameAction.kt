@@ -25,7 +25,7 @@ class GoToAction(var gotoPath: String = "start") : GameAction() {
             fieldset("GoTo Action") {
                 field("Jump to:") {
                     combobox(values = nodeController.sortedNodeKeys) {
-                        selectionModel.select("start")
+                        selectionModel.select(gotoPath)
                         selectionModel.selectedItemProperty().onChange {
                             if (it != null) gotoPath = it
                         }
@@ -62,8 +62,10 @@ class ChangeVariableAction(var variable: String = "", var operation: String = ""
                 field("Variable:") {
                     val variableBox = combobox(values = variableController.variablesSortedByNames) {
                         if (items.size > 0) {
-                            selectionModel.select(items[0])
-                            variable = items[0].name
+                            selectionModel.select(if(variable == "") {
+                                variable = items[0].name
+                                items[0]
+                            } else variableController.getVariableByName(variable))
                         }
                         selectionModel.selectedItemProperty().onChange {
                             if (it != null) variable = it.name
@@ -76,8 +78,8 @@ class ChangeVariableAction(var variable: String = "", var operation: String = ""
                     }
                     combobox(values = variableBox.selectedItem?.validOperations) {
                         if (items.size > 0) {
-                            selectionModel.select("setto")
-                            operation = "setto"
+                            if(operation == "") operation = "setto"
+                            selectionModel.select(operation)
                             updateValidation()
                         }
                         variableBox.selectionModel.selectedItemProperty().onChange {
@@ -89,6 +91,7 @@ class ChangeVariableAction(var variable: String = "", var operation: String = ""
                         }
                     }
                     textfield {
+                        this.text = value
                         this.textProperty().onChange {
                             value = it ?: ""
                             updateValidation()

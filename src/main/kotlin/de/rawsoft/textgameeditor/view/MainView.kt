@@ -5,10 +5,12 @@ import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import de.rawsoft.textgameeditor.controller.NodeController
 import de.rawsoft.textgameeditor.controller.VariableController
 import de.rawsoft.textgameeditor.game.GameNode
+import de.rawsoft.textgameeditor.game.GameNodeModel
 import de.rawsoft.textgameeditor.game.Variable
 import de.rawsoft.textgameeditor.game.VariableModel
 import javafx.scene.control.TabPane
 import javafx.scene.control.TableView
+import javafx.scene.control.TreeItem
 import tornadofx.*
 
 class MainView : View("TextGameEditor") {
@@ -42,15 +44,29 @@ class MainView : View("TextGameEditor") {
                         nodeController.refillTreeView(this)
 
                         contextMenu = contextmenu {
+                            item("New") {
+                                setOnAction {
+                                    val selectedItem = this@treeview.selectionModel.selectedItem
+                                    NodeCreator(selectedItem.value.path, GameNodeModel()) {
+                                        val item = it.item
+                                        item.path = "${this@treeview.selectionModel.selectedItem.value.path}.${it.name.value}"
+
+                                        nodeController.nodes += item.path to item
+                                        selectedItem.children.add(TreeItem(item))
+                                    }.openModal()
+                                }
+                            }
                             item("Delete") {
                                 setOnAction {
-                                    val selectedItemPath = this@treeview.selectionModel.selectedItem.value.path
-                                    nodeController.removeNodeIf {
-                                        it.path.startsWith(selectedItemPath)
+                                    if (this@treeview.selectionModel.selectedItem != null && this@treeview.selectionModel.selectedItem.value.path != "Start") {
+                                        val selectedItemPath = this@treeview.selectionModel.selectedItem.value.path
+                                        nodeController.removeNodeIf {
+                                            it.path.startsWith(selectedItemPath)
+                                        }
+                                        val item = nodeController.getItemByPath(this@treeview, selectedItemPath.split("."))
+                                        val parent = item!!.parent
+                                        parent.children.remove(item)
                                     }
-                                    val item = nodeController.getItemByPath(this@treeview, selectedItemPath.split("."))
-                                    val parent = item!!.parent
-                                    parent.children.remove(item)
                                 }
                             }
                         }
