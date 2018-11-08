@@ -40,6 +40,7 @@ dependencies {
     compile "org.yaml:snakeyaml:1.21"
     compile 'de.jensd:fontawesomefx-materialicons:2.2.0-9.1.2-jdk8'
     compile 'de.jensd:fontawesomefx-commons:9.1.2-jdk8'
+    compile 'org.fxmisc.richtext:richtextfx:0.9.1'
 
     testCompile "org.junit.jupiter:junit-jupiter-api:$junit_version"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:$junit_version"

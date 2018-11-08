@@ -24,7 +24,7 @@ class NodeController : Controller() {
     val sortedNodeKeys get() = nodes.keys.sorted()
 
     init {
-        nodes["start"] = GameNode("Start", "Start", "", "This is a cool game")
+        nodes["start"] = GameNode("Start", "start", "", "This is a cool game")
         nodes["start.option1"] = GameNode("option1", "start.option1", "1. Go Left", "You go left, what's next?")
         nodes["start.option2.test"] = GameNode("test", "start.option2.test", "Test", "You chose test")
         nodes["start.option2"] = GameNode("option2", "start.option2", "2. Go right", "You go right, what's next?")

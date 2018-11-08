@@ -1,0 +1,31 @@
+.keyword {
+    -fx-fill: #c106c7;
+}
+
+.operator {
+    -fx-fill: orange;
+}
+
+.paren {
+    -fx-fill: #a32426;
+}
+
+.brace {
+    -fx-fill: #27a59c;
+}
+
+.bracket {
+    -fx-fill: green;
+}
+
+.semicolon {
+    -fx-fill: #222222;
+}
+
+.string {
+    -fx-fill: #2434ec;
+}
+
+.comment {
+    -fx-fill: #30cc6d;
+}
