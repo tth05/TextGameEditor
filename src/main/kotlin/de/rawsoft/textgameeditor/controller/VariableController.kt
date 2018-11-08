@@ -1,6 +1,5 @@
 package de.rawsoft.textgameeditor.controller
 
-import de.rawsoft.textgameeditor.game.IntVariable
 import de.rawsoft.textgameeditor.game.Variable
 import tornadofx.*
 
@@ -8,13 +7,6 @@ class VariableController : Controller() {
 
     val variables = observableList<Variable>()
     val variablesSortedByNames get() = variables.sorted { o1, o2 -> o1.name.compareTo(o2.name) }
-
-    init {
-        variables += Variable("Test", "125352gw4")
-        variables += Variable("Test123", "12535wqrqr")
-        variables += Variable("Test1afaf23", "12535wqasrqr")
-        variables += IntVariable("Tefafst123", "1253")
-    }
 
     companion object {
         val variablePattern = Regex("(\\{\\w+})")

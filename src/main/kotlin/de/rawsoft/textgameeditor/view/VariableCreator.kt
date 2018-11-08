@@ -16,7 +16,7 @@ class VariableCreator(val items: ObservableList<Variable>?) : View("Variable ers
         minWidth = 300.0
         fieldset("Neue Variable erstellen") {
             field("Typ") {
-                combobox(values = listOf("String", "Int")) {
+                combobox(values = listOf("Text", "Number")) {
                     selectionModel.selectFirst()
                     setOnAction {
                         if(model.item !is IntVariable && selectedItem == "Int") model.item = IntVariable("", "")

@@ -2,13 +2,18 @@ package de.rawsoft.textgameeditor.view
 
 import de.rawsoft.textgameeditor.JavaScriptCodeArea
 import de.rawsoft.textgameeditor.controller.NodeController
+import de.rawsoft.textgameeditor.controller.VariableController
 import de.rawsoft.textgameeditor.controller.frequencyOf
+import de.rawsoft.textgameeditor.game.GameActionScript
 import de.rawsoft.textgameeditor.game.GameNodeModel
 import org.fxmisc.flowless.VirtualizedScrollPane
 import tornadofx.*
 
 class NodeCreator(val path: String, val nodeModel: GameNodeModel, val onSave: (nodeModel: GameNodeModel) -> Unit) : View("Node Creator") {
     val nodeController: NodeController by inject()
+    val variableController: VariableController by inject()
+
+    val codeArea = VirtualizedScrollPane(JavaScriptCodeArea())
 
     override val root = form {
         stylesheets.add(JavaScriptCodeArea::class.java.getResource("/keywords.css").toExternalForm())
@@ -36,13 +41,15 @@ class NodeCreator(val path: String, val nodeModel: GameNodeModel, val onSave: (n
         }
         fieldset("ActionScript") {
             field("Script:") {
-                this += VirtualizedScrollPane(JavaScriptCodeArea())
+                this += codeArea
             }
         }
         button("Save") {
             enableWhen(nodeModel.valid)
             setOnAction {
                 nodeModel.commit()
+                if(codeArea.content.text != null && !codeArea.content.text.isEmpty())
+                    nodeModel.item.actionScriptProperty.value = GameActionScript(codeArea.content.text, variableController)
                 onSave.invoke(nodeModel)
                 close()
             }

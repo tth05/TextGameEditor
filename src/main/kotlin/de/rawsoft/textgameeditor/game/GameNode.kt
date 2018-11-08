@@ -37,6 +37,6 @@ class GameNode(name: String, path: String?, title: String, message: String) {
 
 class GameNodeModel(initialValue: GameNode = GameNode("", "", "", "")) : ItemViewModel<GameNode>(initialValue) {
     val name = bind { item?.nameProperty }
-    val title = bind { item?.nameProperty }
-    val message = bind { item?.nameProperty }
+    val title = bind { item?.titleProperty }
+    val message = bind { item?.messageProperty }
 }

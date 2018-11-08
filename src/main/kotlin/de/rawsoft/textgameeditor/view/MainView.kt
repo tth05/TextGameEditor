@@ -4,13 +4,8 @@ import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import de.rawsoft.textgameeditor.controller.NodeController
 import de.rawsoft.textgameeditor.controller.VariableController
-import de.rawsoft.textgameeditor.game.GameNode
-import de.rawsoft.textgameeditor.game.GameNodeModel
-import de.rawsoft.textgameeditor.game.Variable
-import de.rawsoft.textgameeditor.game.VariableModel
-import javafx.scene.control.TabPane
-import javafx.scene.control.TableView
-import javafx.scene.control.TreeItem
+import de.rawsoft.textgameeditor.game.*
+import javafx.scene.control.*
 import tornadofx.*
 
 class MainView : View("TextGameEditor") {
@@ -20,6 +15,8 @@ class MainView : View("TextGameEditor") {
 
     val variableController: VariableController by inject()
     val nodeController: NodeController by inject()
+
+    var runner: Runner? = null
 
     init {
         primaryStage.width = 1000.0
@@ -51,8 +48,15 @@ class MainView : View("TextGameEditor") {
                                         val item = it.item
                                         item.path = "${this@treeview.selectionModel.selectedItem.value.path}.${it.name.value}"
 
+                                        //Add to nodes map
                                         nodeController.nodes += item.path to item
-                                        selectedItem.children.add(TreeItem(item))
+                                        //Add to TreeView
+                                        val treeItem = TreeItem(item)
+                                        selectedItem.children.add(treeItem)
+
+                                        //Add to children of node parent
+                                        val node = nodeController.getParentItemByPath(this@treeview, item.path.split("."))
+                                        node!!.value.children.add(item.name)
                                     }.openModal()
                                 }
                             }
@@ -63,9 +67,14 @@ class MainView : View("TextGameEditor") {
                                         nodeController.removeNodeIf {
                                             it.path.startsWith(selectedItemPath)
                                         }
+
+                                        //Remove from treeview
                                         val item = nodeController.getItemByPath(this@treeview, selectedItemPath.split("."))
                                         val parent = item!!.parent
                                         parent.children.remove(item)
+
+                                        //Remove from children of parent
+                                        parent.value.children.remove(item.value.name)
                                     }
                                 }
                             }
@@ -117,11 +126,34 @@ class MainView : View("TextGameEditor") {
 
                 tab("Play") {
                     vbox {
-                        val area = textarea {
+                        lateinit var playButton: Button
+                        lateinit var stopButton: Button
+                        lateinit var area: TextArea
+
+                        hbox {
+                            playButton = button(graphic = MaterialIconView(MaterialIcon.PLAYLIST_PLAY).apply { size = "2em" }) {
+                                setOnMouseClicked {
+                                    runner = Runner(area) {
+                                        stopButton.isDisable = true
+                                        runner = null
+                                    }
+                                    stopButton.isDisable = false
+                                }
+                            }
+                            stopButton = button(graphic = MaterialIconView(MaterialIcon.STOP).apply { size = "2em" }) {
+                                setOnMouseClicked {
+                                    runner?.endGame("Interrupted")
+                                    runner = null
+                                    this.isDisable = true
+                                }
+                            }
+                        }
+                        stopButton.isDisable = true
+                        playButton.enableWhen(stopButton.disabledProperty())
+
+                        area = textarea {
                             isEditable = false
                             prefHeight = 1000.0
-
-                            text = "wjfakjfakepgjapog"
 
                             style {
                                 fontSize = 15.0.px
@@ -129,6 +161,10 @@ class MainView : View("TextGameEditor") {
                         }
 
                         textfield {
+                            setOnAction {
+                                runner?.onInput(this.text)
+                                this.text = ""
+                            }
                         }
 
                         spacing = 5.0
