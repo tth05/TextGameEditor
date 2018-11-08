@@ -19,8 +19,8 @@ class VariableCreator(val items: ObservableList<Variable>?) : View("Variable ers
                 combobox(values = listOf("Text", "Number")) {
                     selectionModel.selectFirst()
                     setOnAction {
-                        if(model.item !is IntVariable && selectedItem == "Int") model.item = IntVariable("", "")
-                        if(model.item is IntVariable && selectedItem == "String") model.item = Variable("", "")
+                        if(model.item !is IntVariable && selectedItem == "Number") model.item = IntVariable("", "")
+                        if(model.item is IntVariable && selectedItem == "Text") model.item = Variable("", "")
                     }
                 }
             }

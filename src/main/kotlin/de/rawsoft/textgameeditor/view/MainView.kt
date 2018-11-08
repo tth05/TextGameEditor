@@ -60,6 +60,14 @@ class MainView : View("TextGameEditor") {
                                     }.openModal()
                                 }
                             }
+                            item("Edit") {
+                                setOnAction {
+                                    val selectedItem = this@treeview.selectionModel.selectedItem
+                                    NodeCreator(selectedItem.value.path, GameNodeModel(selectedItem.value)) {
+
+                                    }.apply { checkName = false }.openModal()
+                                }
+                            }
                             item("Delete") {
                                 setOnAction {
                                     if (this@treeview.selectionModel.selectedItem != null && this@treeview.selectionModel.selectedItem.value.path != "Start") {

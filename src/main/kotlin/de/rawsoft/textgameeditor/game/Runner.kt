@@ -31,6 +31,10 @@ class Runner(val textArea: TextArea, val onEndGame: () -> Unit) : Component() {
     init {
         engine.put("goto", GOTO_FUNCTION)
         engine.put("endGame", ENDGAME_FUNCTION)
+        variableController.variables.forEach {
+            println("Put ${it.name} with ${it.getValue()}")
+            engine.put(it.name, it.getValue())
+        }
         updateScreen()
     }
 
@@ -45,13 +49,10 @@ class Runner(val textArea: TextArea, val onEndGame: () -> Unit) : Component() {
     fun execute() {
         val script = currentNode.actionScript
         if(script != null && !script.textProperty.value.isEmpty()) {
-            script.neededVariables.forEach {
-                engine.put(it, variableController.getVariableByName(it)!!.getValue())
-            }
             engine.eval(script.textProperty.value)
-            script.neededVariables.forEach {
-                val variable = variableController.getVariableByName(it)!!
-                variable.setValue(engine.get(it))
+            variableController.variables.forEach {
+                println("Get ${it.name} : ${engine.get(it.name)}")
+                it.setValue(engine.get(it.name))
             }
         }
         if(!endGame) updateScreen()

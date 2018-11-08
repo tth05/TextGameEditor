@@ -14,13 +14,18 @@ class NodeCreator(val path: String, val nodeModel: GameNodeModel, val onSave: (n
     val variableController: VariableController by inject()
 
     val codeArea = VirtualizedScrollPane(JavaScriptCodeArea())
+    var checkName = true
 
     override val root = form {
         stylesheets.add(JavaScriptCodeArea::class.java.getResource("/keywords.css").toExternalForm())
         fieldset("Node") {
             field("Name:") {
                 textfield(nodeModel.name).validator {
-                    if(nodeController.nodes.keys.filter { it.startsWith(path) && it.frequencyOf('.') > path.frequencyOf('.') }.map { it.substring(it.lastIndexOf('.') + 1) }.any { it == nodeModel.name.value })
+                    if(nodeController.nodes.keys
+                                    .filter { it.startsWith(path) && it.frequencyOf('.') == path.frequencyOf('.') + 1 }
+                                    .map { it.substring(it.lastIndexOf('.') + 1) }
+                                    .filter { if(checkName) true else it != nodeModel.item.name }
+                                    .any { it == nodeModel.name.value })
                         error("Diesen Namen gibt es bereits")
                     else if(it.isNullOrBlank())
                         error("Ungültiger Wert")
@@ -42,6 +47,8 @@ class NodeCreator(val path: String, val nodeModel: GameNodeModel, val onSave: (n
         fieldset("ActionScript") {
             field("Script:") {
                 this += codeArea
+                if(nodeModel.item.actionScript != null)
+                    codeArea.content.accessibleText = nodeModel.item.actionScript.textProperty.value
             }
         }
         button("Save") {
