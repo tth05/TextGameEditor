@@ -22,7 +22,10 @@ public class JavaScriptCodeArea extends CodeArea {
 	private final String[] KEYWORDS = new String[] {
 			"if", "else", "var", "let", "for",
 			"case", "while", "return", "const",
-			"continue"
+			"continue", "null", "function", "break",
+			"catch", "try", "new", "switch", "this",
+			"void", "do", "finally", "in", "throw",
+			"typeof", "with"
 	};
 
 	private final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
