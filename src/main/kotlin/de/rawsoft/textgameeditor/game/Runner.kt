@@ -33,6 +33,8 @@ class Runner(val textArea: TextArea, val onEndGame: () -> Unit) : Component() {
     }
 
     init {
+        textArea.clear()
+
         engine.put("goto", GOTO_FUNCTION)
         engine.put("endGame", ENDGAME_FUNCTION)
         variableController.variables.forEach {

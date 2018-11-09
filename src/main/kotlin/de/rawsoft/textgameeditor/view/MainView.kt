@@ -163,8 +163,20 @@ class MainView : View("TextGameEditor") {
                             isEditable = false
                             prefHeight = 1000.0
 
+                            for (node in lookupAll(".scroll-pane")) {
+                                if (node is ScrollPane) {
+                                    val pane = node
+                                    this.setOnScroll {
+                                        val deltaY = it.deltaY * 10 // *6 to make the scrolling a bit faster
+                                        val width = pane.content.boundsInLocal.width
+                                        val vvalue = pane.vvalue
+                                        pane.vvalue = vvalue + -deltaY / width
+                                    }
+                                }
+                            }
+
                             textProperty().onChange {
-                                this.scrollTopProperty().value = Double.MAX_VALUE
+                                this.scrollTopProperty().value = Double.MIN_VALUE
                             }
 
                             style {
