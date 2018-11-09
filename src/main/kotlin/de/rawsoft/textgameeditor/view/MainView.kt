@@ -163,6 +163,10 @@ class MainView : View("TextGameEditor") {
                             isEditable = false
                             prefHeight = 1000.0
 
+                            textProperty().onChange {
+                                this.scrollTopProperty().value = Double.MAX_VALUE
+                            }
+
                             style {
                                 fontSize = 15.0.px
                             }

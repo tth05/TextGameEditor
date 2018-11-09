@@ -74,14 +74,16 @@ class Runner(val textArea: TextArea, val onEndGame: () -> Unit) : Component() {
     }
 
     fun updateScreen() {
-        var text = "${currentNode.message}\n"
-        text = variableController.setPlaceholders(text)
+        var text = currentNode.message
+        text += "\n"
         for (i in 0.until(currentNode.children.size)) {
             text += "${i + 1}. " + nodeController.nodes[currentNode.path + "." + currentNode.children[i]]!!.title + "\n"
         }
 
+        text = variableController.setPlaceholders(text)
         text += "\n"
-        textArea.appendText("\n\n$text")
+        text += "---------------------\n"
+        textArea.appendText(text)
     }
 
     fun endGame(message: String) {
