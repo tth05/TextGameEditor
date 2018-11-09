@@ -12,15 +12,19 @@ class Runner(val textArea: TextArea, val onEndGame: () -> Unit) : Component() {
     val variableController: VariableController by inject()
     val nodeController: NodeController by inject()
 
+    val localVariables = mutableMapOf<String, Any>()
+
     val manager = ScriptEngineManager()
     val engine = manager.getEngineByName("JavaScript")
 
     var currentNode: GameNode = nodeController.nodes["start"]!!
     var endGame = false
+    var runHadGoto = false
 
     val GOTO_FUNCTION = Consumer<String> {
+        runHadGoto = true
         val node = nodeController.nodes[it]
-        if(node != null)
+        if (node != null)
             currentNode = node
     }
 
@@ -34,32 +38,42 @@ class Runner(val textArea: TextArea, val onEndGame: () -> Unit) : Component() {
         variableController.variables.forEach {
             println("Put ${it.name} with ${it.getValue()}")
             engine.put(it.name, it.getValue())
+            localVariables[it.name] = it.getValue()
         }
         updateScreen()
     }
 
     fun onInput(input: String) {
-        if(!input.isInt()) return
+        if (!input.isInt()) return
         val i = input.toInt()
-        if(i - 1 > currentNode.children.size || i < 0) return
+        if (i - 1 > currentNode.children.size || i < 0) return
         currentNode = nodeController.nodes["${currentNode.path}.${currentNode.children[i - 1]}"]!!
         execute()
     }
 
     fun execute() {
         val script = currentNode.actionScript
-        if(script != null && !script.textProperty.value.isEmpty()) {
+        if (script != null && !script.textProperty.value.isEmpty()) {
             engine.eval(script.textProperty.value)
             variableController.variables.forEach {
                 println("Get ${it.name} : ${engine.get(it.name)}")
                 it.setValue(engine.get(it.name))
             }
         }
-        if(!endGame) updateScreen()
+        if (!endGame) {
+            updateScreen()
+        } else {
+            variableController.variables.forEach {
+                it.setValue(localVariables[it.name]!!)
+            }
+        }
+        if (runHadGoto && !endGame) {
+            runHadGoto = false
+            execute()
+        }
     }
 
     fun updateScreen() {
-        textArea.clear()
         var text = "${currentNode.message}\n"
         text = variableController.setPlaceholders(text)
         for (i in 0.until(currentNode.children.size)) {
@@ -67,12 +81,12 @@ class Runner(val textArea: TextArea, val onEndGame: () -> Unit) : Component() {
         }
 
         text += "\n"
-        textArea.text = text
+        textArea.appendText("\n\n$text")
     }
 
     fun endGame(message: String) {
         endGame = true
-        textArea.text = message
+        textArea.appendText(message)
         onEndGame.invoke()
     }
 }

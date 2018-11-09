@@ -23,15 +23,13 @@ class NodeController : Controller() {
         }
     val sortedNodeKeys get() = nodes.keys.sorted()
 
-
-    val variableController: VariableController by inject()
     init {
-        val s = GameNode("start", "start", "", "This is a cool game")
+        val s = GameNode("start", "start", "unused", "This is a cool game")
         nodes["start"] = s
     }
 
     fun refillTreeView(view: TreeView<GameNode>) {
-        view.root = TreeItem(nodes.getOrDefault("start", GameNode("Start", "start", "A message", "A message")))
+        view.root = TreeItem(nodes["start"])
         val map = nodesSortedByKeys.filter { it.key != "start" }
 
         map.forEach {

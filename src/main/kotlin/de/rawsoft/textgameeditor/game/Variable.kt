@@ -17,7 +17,7 @@ open class Variable(name: String, value: String){
     }
 
     open fun getValue() : Any {
-        return name
+        return value
     }
 }
 
