@@ -139,7 +139,7 @@ class MainView : View("TextGameEditor") {
                         lateinit var area: TextArea
 
                         hbox {
-                            playButton = button(graphic = MaterialIconView(MaterialIcon.PLAYLIST_PLAY).apply { size = "2em" }) {
+                            playButton = button(graphic = MaterialIconView(MaterialIcon.PLAY_ARROW).apply { size = "2em" }) {
                                 setOnMouseClicked {
                                     runner = Runner(area) {
                                         stopButton.isDisable = true
