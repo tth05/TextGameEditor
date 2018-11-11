@@ -26,8 +26,8 @@ class GameNode(name: String, path: String?, title: String, message: String) {
 
 
     companion object {
-        fun fromConfigSection(section: ConfigurationSection, variableController: VariableController): GameNode {
-            val node = GameNode(section.getString("name"), null, section.getString("title"), section.getString("message"))
+        fun fromConfigSection(section: ConfigurationSection, path: String, variableController: VariableController): GameNode {
+            val node = GameNode(section.getString("name"), path, section.getString("title"), section.getString("message"))
             section.getSection("children").keys.forEach { node.children.add(it) }
             node.actionScriptProperty.value = GameActionScript(section.getString("script"), variableController)
             return node
