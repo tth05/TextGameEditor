@@ -62,9 +62,8 @@ class Runner(val textArea: TextArea, val onEndGame: () -> Unit) : Component() {
                 it.setValue(engine.get(it.name))
             }
         }
-        if (!endGame) {
-            updateScreen()
-        } else {
+        updateScreen()
+        if (endGame) {
             variableController.variables.forEach {
                 it.setValue(localVariables[it.name]!!)
             }

@@ -2,7 +2,6 @@ package de.rawsoft.textgameeditor.game
 
 import de.rawsoft.textgameeditor.config.ConfigurationSection
 import de.rawsoft.textgameeditor.controller.VariableController
-import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
 
@@ -19,8 +18,7 @@ class GameNode(name: String, path: String?, title: String, message: String) {
     val nameProperty = SimpleStringProperty(name)
     var name by nameProperty
 
-    val actionScriptProperty = SimpleObjectProperty<GameActionScript>()
-    val actionScript by actionScriptProperty
+    var actionScript: GameActionScript? = null
 
     val children = mutableListOf<String>()
 
@@ -29,7 +27,7 @@ class GameNode(name: String, path: String?, title: String, message: String) {
         fun fromConfigSection(section: ConfigurationSection, path: String, variableController: VariableController): GameNode {
             val node = GameNode(section.getString("name"), path, section.getString("title"), section.getString("message"))
             section.getSection("children").keys.forEach { node.children.add(it) }
-            node.actionScriptProperty.value = GameActionScript(section.getString("script"), variableController)
+            node.actionScript = GameActionScript(section.getString("script"), variableController)
             return node
         }
     }

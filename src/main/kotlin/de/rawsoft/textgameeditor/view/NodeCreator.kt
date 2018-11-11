@@ -47,9 +47,8 @@ class NodeCreator(val path: String, val nodeModel: GameNodeModel, val onSave: (n
         fieldset("ActionScript") {
             field("Script:") {
                 this += codeArea
-                if(nodeModel.item.actionScript != null) {
-                    codeArea.content.appendText(nodeModel.item.actionScript.textProperty.value)
-                }
+                if(nodeModel.item.actionScript != null)
+                    codeArea.content.appendText((nodeModel.item.actionScript as GameActionScript).textProperty.value)
             }
         }
         button("Save") {
@@ -57,7 +56,7 @@ class NodeCreator(val path: String, val nodeModel: GameNodeModel, val onSave: (n
             setOnAction {
                 nodeModel.commit()
                 if(codeArea.content.text != null && !codeArea.content.text.isEmpty())
-                    nodeModel.item.actionScriptProperty.value = GameActionScript(codeArea.content.text, variableController)
+                    nodeModel.item.actionScript = GameActionScript(codeArea.content.text, variableController)
                 onSave.invoke(nodeModel)
                 close()
             }
