@@ -18,7 +18,7 @@ class Runner(val textArea: TextArea, val onEndGame: () -> Unit) : Component() {
     val engine = manager.getEngineByName("JavaScript")
 
     var currentNode: GameNode = nodeController.nodes["start"]!!
-    var endGame = false
+    var endGame: String? = null
     var runHadGoto = false
 
     val GOTO_FUNCTION = Consumer<String> {
@@ -29,7 +29,7 @@ class Runner(val textArea: TextArea, val onEndGame: () -> Unit) : Component() {
     }
 
     val ENDGAME_FUNCTION = Consumer<String> {
-        this.endGame(it)
+        endGame = it
     }
 
     init {
@@ -63,12 +63,13 @@ class Runner(val textArea: TextArea, val onEndGame: () -> Unit) : Component() {
             }
         }
         updateScreen()
-        if (endGame) {
+        if (endGame != null) {
+            endGame(endGame as String)
             variableController.variables.forEach {
                 it.setValue(localVariables[it.name]!!)
             }
         }
-        if (runHadGoto && !endGame) {
+        if (runHadGoto && endGame == null) {
             runHadGoto = false
             execute()
         }
@@ -88,7 +89,7 @@ class Runner(val textArea: TextArea, val onEndGame: () -> Unit) : Component() {
     }
 
     fun endGame(message: String) {
-        endGame = true
+        endGame = message
         textArea.appendText(message)
         onEndGame.invoke()
     }

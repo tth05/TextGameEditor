@@ -57,6 +57,9 @@ class NodeCreator(val path: String, val nodeModel: GameNodeModel, val onSave: (n
                 nodeModel.commit()
                 if(codeArea.content.text != null && !codeArea.content.text.isEmpty())
                     nodeModel.item.actionScript = GameActionScript(codeArea.content.text, variableController)
+                else
+                //Make sure action script resets to null
+                    nodeModel.item.actionScript = null
                 onSave.invoke(nodeModel)
                 close()
             }

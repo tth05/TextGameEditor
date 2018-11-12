@@ -2,10 +2,12 @@ package de.rawsoft.textgameeditor.view
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import de.rawsoft.textgameeditor.controller.FileController
 import de.rawsoft.textgameeditor.controller.NodeController
 import de.rawsoft.textgameeditor.controller.VariableController
 import de.rawsoft.textgameeditor.game.*
 import javafx.scene.control.*
+import javafx.stage.FileChooser
 import tornadofx.*
 
 class MainView : View("TextGameEditor") {
@@ -15,6 +17,9 @@ class MainView : View("TextGameEditor") {
 
     val variableController: VariableController by inject()
     val nodeController: NodeController by inject()
+    val fileController: FileController by inject()
+
+    lateinit var treeView: TreeView<GameNode>
 
     var runner: Runner? = null
 
@@ -26,9 +31,35 @@ class MainView : View("TextGameEditor") {
             top = menubar {
                 useMaxWidth = true
                 menu("File") {
-                    item("New")
-                    item("Open")
-                    item("Save")
+                    setOnShown {
+                        items.forEach {
+                            it.isDisable = runner != null
+                        }
+                    }
+                    item("New").setOnAction {
+                        val files = chooseFile("Datei erstellen", arrayOf(FileChooser.ExtensionFilter("yml", "*.yml")), FileChooserMode.Save)
+                        if (!files.isEmpty()) {
+                            fileController.create(files[0].toPath())
+                            nodeController.refillTreeView(treeView)
+                        }
+                    }
+                    item("Open").setOnAction {
+                        val files = chooseFile("Datei öffnen", arrayOf(FileChooser.ExtensionFilter("yml", "*.yml")), FileChooserMode.Single)
+                        if (!files.isEmpty()) {
+                            fileController.save()
+                            fileController.load(files[0].toPath())
+                            nodeController.refillTreeView(treeView)
+                        }
+                    }
+                    item("Save").setOnAction {
+                        var files = listOf(fileController.currentFile?.toFile())
+                        if (fileController.currentFile == null)
+                            files = chooseFile("Datei speichern", arrayOf(FileChooser.ExtensionFilter("yml", "*.yml")), FileChooserMode.Save)
+                        if (!files.isEmpty() && files[0] != null) {
+                            fileController.currentFile = files[0]!!.toPath()
+                            fileController.save()
+                        }
+                    }
                     item("Export")
                 }
             }
@@ -37,7 +68,7 @@ class MainView : View("TextGameEditor") {
                 tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
 
                 tab("Nodes") {
-                    treeview<GameNode> {
+                    treeView = treeview<GameNode> {
                         nodeController.refillTreeView(this)
 
                         contextMenu = contextmenu {

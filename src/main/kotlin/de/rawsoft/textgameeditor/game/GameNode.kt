@@ -22,12 +22,20 @@ class GameNode(name: String, path: String?, title: String, message: String) {
 
     val children = mutableListOf<String>()
 
+    fun toConfigSection(section: ConfigurationSection) {
+        section.set("name", name)
+        section.set("title", title)
+        section.set("message", message)
+        if (actionScript != null)
+            section.set("script", (actionScript as GameActionScript).textProperty.value)
+    }
 
     companion object {
         fun fromConfigSection(section: ConfigurationSection, path: String, variableController: VariableController): GameNode {
             val node = GameNode(section.getString("name"), path, section.getString("title"), section.getString("message"))
             section.getSection("children").keys.forEach { node.children.add(it) }
-            node.actionScript = GameActionScript(section.getString("script"), variableController)
+            if (section.getString("script") != "")
+                node.actionScript = GameActionScript(section.getString("script"), variableController)
             return node
         }
     }
