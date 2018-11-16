@@ -7,6 +7,7 @@ import de.rawsoft.textgameeditor.controller.NodeController
 import de.rawsoft.textgameeditor.controller.VariableController
 import de.rawsoft.textgameeditor.game.*
 import javafx.scene.control.*
+import javafx.scene.text.Font
 import javafx.stage.FileChooser
 import tornadofx.*
 
@@ -121,6 +122,10 @@ class MainView : View("TextGameEditor") {
 
                         cellFormat {
                             this.text = this.treeItem.value.name
+                            tooltip {
+                                this.text = "Name: ${this@cellFormat.treeItem.value.name}\nTitle: ${this@cellFormat.treeItem.value.title}\nMessage: ${this@cellFormat.treeItem.value.message}"
+                                this.font = Font.font(13.0)
+                            }
                         }
                     }
                 }
