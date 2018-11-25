@@ -6,12 +6,14 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -50,7 +52,7 @@ public class YamlConfiguration extends ConfigurationProvider {
 
 	@Override
 	public ConfigurationSection load(File file, ConfigurationSection defaults) throws IOException {
-		try (FileReader reader = new FileReader(file)) {
+		try (InputStreamReader reader =  new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
 			return load(reader, defaults);
 		}
 	}

@@ -4,9 +4,7 @@ import de.rawsoft.textgameeditor.view.MainView
 import javafx.scene.control.Tooltip
 import javafx.util.Duration
 import tornadofx.App
-
-
-
+import java.util.*
 
 
 class App: App(MainView::class, Styles::class) {
@@ -25,40 +23,20 @@ class App: App(MainView::class, Styles::class) {
      */
     private fun setupCustomTooltipBehavior(openDelayInMillis: Double, visibleDurationInMillis: Double, closeDelayInMillis: Double) {
         try {
+            val behaviorClass = Arrays.stream(Tooltip::class.java.declaredClasses).filter { it.canonicalName == "javafx.scene.control.Tooltip.TooltipBehavior" }.findAny().get()
 
-            var TTBehaviourClass: Class<*>? = null
-            val declaredClasses = Tooltip::class.java.declaredClasses
-            for (c in declaredClasses) {
-                if (c.canonicalName == "javafx.scene.control.Tooltip.TooltipBehavior") {
-                    TTBehaviourClass = c
-                    break
-                }
-            }
-            if (TTBehaviourClass == null) {
-                // abort
-                return
-            }
-            val constructor = TTBehaviourClass.getDeclaredConstructor(
-                    Duration::class.java, Duration::class.java, Duration::class.java, Boolean::class.javaPrimitiveType)
-                    ?: // abort
-                    return
+            val constructor = behaviorClass.getDeclaredConstructor(Duration::class.java, Duration::class.java, Duration::class.java, Boolean::class.javaPrimitiveType) ?: return
             constructor.isAccessible = true
-            val newTTBehaviour = constructor.newInstance(
-                    Duration(openDelayInMillis), Duration(visibleDurationInMillis),
-                    Duration(closeDelayInMillis), false)
-                    ?: // abort
-                    return
-            val ttbehaviourField = Tooltip::class.java.getDeclaredField("BEHAVIOR")
-                    ?: // abort
-                    return
-            ttbehaviourField.isAccessible = true
+
+            val behaviorInstance = constructor.newInstance(Duration(openDelayInMillis), Duration(visibleDurationInMillis), Duration(closeDelayInMillis), false) ?: return
+            val behaviorField = Tooltip::class.java.getDeclaredField("BEHAVIOR") ?: return
+            behaviorField.isAccessible = true
 
             // Cache the default behavior if needed.
-            val defaultTTBehavior = ttbehaviourField.get(Tooltip::class.java)
-            ttbehaviourField.set(Tooltip::class.java, newTTBehaviour)
-
+            val behaviorFieldValue = behaviorField.get(Tooltip::class.java)
+            behaviorField.set(Tooltip::class.java, behaviorInstance)
         } catch (e: Exception) {
-            println("Aborted setup due to error:" + e.message)
+            println("Error while changing the Tooltip:" + e.message)
         }
 
     }
