@@ -28,6 +28,10 @@ class Runner(val textArea: TextArea, val onEndGame: () -> Unit) : Component() {
             currentNode = node
     }
 
+    val CLEAR_FUNCTION = Runnable {
+        textArea.clear()
+    }
+
     val ENDGAME_FUNCTION = Consumer<String> {
         endGame = it
     }
@@ -37,6 +41,7 @@ class Runner(val textArea: TextArea, val onEndGame: () -> Unit) : Component() {
 
         engine.put("goto", GOTO_FUNCTION)
         engine.put("endGame", ENDGAME_FUNCTION)
+        engine.put("clear", CLEAR_FUNCTION)
         variableController.variables.forEach {
             println("Put ${it.name} with ${it.getValue()}")
             engine.put(it.name, it.getValue())

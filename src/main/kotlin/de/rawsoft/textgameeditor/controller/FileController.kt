@@ -28,6 +28,7 @@ class FileController : Controller() {
 
         variableController.variables.clear()
         section.getSection("variables").keys.forEach {
+
             val value = section.get("variables.$it")
             if (value is Int) variableController.variables += IntVariable(it, value.toString())
             else variableController.variables += Variable(it, value.toString())
