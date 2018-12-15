@@ -7,7 +7,7 @@ import tornadofx.App
 import java.util.*
 
 
-class App: App(MainView::class, Styles::class) {
+class App: App(MainView::class) {
 
     init {
         //Change global tooltip behaviour
@@ -32,8 +32,6 @@ class App: App(MainView::class, Styles::class) {
             val behaviorField = Tooltip::class.java.getDeclaredField("BEHAVIOR") ?: return
             behaviorField.isAccessible = true
 
-            // Cache the default behavior if needed.
-            val behaviorFieldValue = behaviorField.get(Tooltip::class.java)
             behaviorField.set(Tooltip::class.java, behaviorInstance)
         } catch (e: Exception) {
             println("Error while changing the Tooltip:" + e.message)
