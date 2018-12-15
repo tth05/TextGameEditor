@@ -51,7 +51,10 @@ class FileController : Controller() {
     }
 
     fun save() {
-        if (currentFile == null || !Files.exists(currentFile)) return
+        if (currentFile == null) return
+        if(!Files.exists(currentFile))
+            Files.createFile(currentFile)
+
         val config = YamlConfiguration()
         val section = config.load((currentFile as Path).toFile())
         saveNodeRecursive(section.getSection("nodes.start"), nodeController.nodes["start"]!!)
